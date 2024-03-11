@@ -8,11 +8,13 @@ const Read = () => {
   const [search, setSearch] = useState("");
   const [dateSearch, setDateSearch] = useState("");
   const [dateSearchEnd, setDateSearchEnd] = useState("");
+  const [sortedData, setSortedData] = useState([]);
   useEffect(() => {
     axios
       .get(`https://65eb516543ce16418933af30.mockapi.io/fakeData`)
       .then((ressponse) => {
         setAPIData(ressponse.data);
+        setSortedData(ressponse.data.slice());
       });
   }, []);
 
@@ -33,6 +35,20 @@ const Read = () => {
     axios
       .delete(`https://65eb516543ce16418933af30.mockapi.io/fakeData/${id}`)
       .then(() => getData());
+  };
+  const dataSort = (sortByName) => {
+    const copyData = sortedData.slice();
+    copyData.sort((a, b) => {
+      if (a[sortByName] > b[sortByName]) {
+        return 1;
+      }
+      if (a[sortByName] < b[sortByName]) {
+        return -1;
+      }
+      return 0;
+    });
+    setSortedData(copyData);
+    setAPIData(copyData.slice());
   };
   return (
     <>
@@ -67,8 +83,26 @@ const Read = () => {
         <Table singleLine>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>First Name</Table.HeaderCell>
-              <Table.HeaderCell>Last Name</Table.HeaderCell>
+              <Table.HeaderCell>
+                First Name{" "}
+                <Button
+                  onClick={() => {
+                    dataSort("firstName");
+                  }}
+                >
+                  Sort
+                </Button>
+              </Table.HeaderCell>
+              <Table.HeaderCell>
+                Last Name{" "}
+                <Button
+                  onClick={() => {
+                    dataSort("lastName");
+                  }}
+                >
+                  Sort
+                </Button>
+              </Table.HeaderCell>
               <Table.HeaderCell>Checked</Table.HeaderCell>
               <Table.HeaderCell>Date</Table.HeaderCell>
               <Table.HeaderCell>Update</Table.HeaderCell>
