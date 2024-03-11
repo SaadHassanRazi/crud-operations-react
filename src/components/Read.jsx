@@ -1,11 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Table, Button } from "semantic-ui-react";
+import { Table, Button, Input } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
 const Read = () => {
   const [APIData, setAPIData] = useState([]);
-
+  const [search, setSearch] = useState("");
+  const [dateSearch, setDateSearch] = useState("");
+  const [dateSearchEnd, setDateSearchEnd] = useState("");
   useEffect(() => {
     axios
       .get(`https://65eb516543ce16418933af30.mockapi.io/fakeData`)
@@ -15,10 +17,11 @@ const Read = () => {
   }, []);
 
   const setData = (data) => {
-    let { id, firstName, lastName, checkbox } = data;
+    let { id, firstName, lastName, checkbox, date } = data;
     localStorage.setItem("ID", id);
     localStorage.setItem("First Name", firstName);
     localStorage.setItem("Last Name", lastName);
+    localStorage.setItem("Date", date);
     localStorage.setItem("Checkbox Value", checkbox);
   };
   const getData = () => {
@@ -34,23 +37,70 @@ const Read = () => {
   return (
     <>
       <div>
+        <Input
+          placeholder="Search"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+        <div>
+          <label htmlFor="">Start Date</label>
+          <Input
+            placeholder="Search..."
+            onChange={(e) => {
+              setDateSearch(e.target.value);
+            }}
+            type="date"
+            value={dateSearch}
+          />
+          <label htmlFor="">End Date</label>
+          <Input
+            placeholder="Search..."
+            onChange={(e) => {
+              setDateSearchEnd(e.target.value);
+            }}
+            type="date"
+            value={dateSearchEnd}
+          />
+        </div>
+
         <Table singleLine>
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell>First Name</Table.HeaderCell>
               <Table.HeaderCell>Last Name</Table.HeaderCell>
               <Table.HeaderCell>Checked</Table.HeaderCell>
+              <Table.HeaderCell>Date</Table.HeaderCell>
               <Table.HeaderCell>Update</Table.HeaderCell>
               <Table.HeaderCell>Delete</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
 
           <Table.Body>
-            {APIData.map((data) => {
+            {APIData.filter((data) => {
+              const searchMatch =
+                search.toLowerCase() === ""
+                  ? data
+                  : data.firstName.toLowerCase().includes(search);
+
+              // Parse user-provided dates (if available)
+              const startDate = dateSearch ? new Date(dateSearch) : null;
+              const endDate = dateSearchEnd ? new Date(dateSearchEnd) : null;
+              const parsedDate = new Date(data.date);
+              // Check for start date match (if provided)
+              const startDateMatch = startDate ? parsedDate >= startDate : true;
+
+              // Check for end date match (if provided)
+              const endDateMatch = endDate ? parsedDate <= endDate : true;
+
+              // Combine filters: all conditions must be met
+              return searchMatch && startDateMatch && endDateMatch;
+            }).map((data) => {
               return (
                 <Table.Row>
                   <Table.Cell>{data.firstName}</Table.Cell>
                   <Table.Cell>{data.lastName}</Table.Cell>
+                  <Table.Cell>{data.date}</Table.Cell>
                   <Table.Cell>
                     {data.checkbox ? "Checked" : "Unchecked"}
                   </Table.Cell>

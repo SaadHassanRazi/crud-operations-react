@@ -7,6 +7,7 @@ const Update = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [checkbox, setCheckbox] = useState(false);
+  const [date,setDate] = useState('')
 
   const [id, setID] = useState(null);
   let navigate = useNavigate()
@@ -15,6 +16,7 @@ const Update = () => {
     setFirstName(localStorage.getItem("First Name"));
     setLastName(localStorage.getItem("Last Name"));
     setCheckbox(localStorage.getItem("Checkbox Value"));
+    setDate(localStorage.getItem("Date"));
     // const retrievedId = localStorage.getItem("ID");
     // const retrievedFirstName = localStorage.getItem("FirstName");
     // const retrievedLastName = localStorage.getItem("LastName");
@@ -31,6 +33,7 @@ const Update = () => {
       firstName,
       lastName,
       checkbox,
+      date
     }).then(()=>{
         navigate('/read')
     });
@@ -60,6 +63,16 @@ const Update = () => {
             label="I agree to the Terms and Conditions"
             checked={checkbox}
             onChange={(e) => setCheckbox(!checkbox)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Date</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value);
+            }}
           />
         </Form.Field>
         <Button type="submit" onClick={updateAPIData}>

@@ -6,6 +6,7 @@ const Create = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [checkbox, setCheckbox] = useState(false);
+  const [date, setDate] = useState();
   let navigate = useNavigate();
   const postData = () => {
     axios
@@ -13,6 +14,7 @@ const Create = () => {
         firstName,
         lastName,
         checkbox,
+        date,
       })
       .then(() => {
         navigate("/read");
@@ -43,6 +45,16 @@ const Create = () => {
           <Checkbox
             label="I agree to the Terms and Conditions"
             onChange={(e) => setCheckbox(!checkbox)}
+          />
+        </Form.Field>
+        <Form.Field>
+          <label>Date</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value);
+            }}
           />
         </Form.Field>
         <Button type="submit" onClick={postData}>
